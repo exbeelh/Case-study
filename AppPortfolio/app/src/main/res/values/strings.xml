@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AppPortfolio</string>
+    <string name="potfolio">Portfolio</string>
+    <string name="report_per_month">Report Per Month</string>
+</resources>
