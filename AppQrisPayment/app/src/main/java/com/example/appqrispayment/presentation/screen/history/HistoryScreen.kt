@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.appqrispayment.util.formatConverter
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -23,22 +24,22 @@ fun HistoryScreen(
     viewModel: HistoryScreenViewModel = hiltViewModel(),
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
-    val histories by viewModel.transactions.collectAsState(listOf())
+    val transactions by viewModel.transactions.collectAsState(listOf())
 
     LazyColumn {
-        items(histories) { histories ->
+        items(transactions) { transaction ->
             Card (
                 modifier = modifier.fillMaxWidth().height(120.dp).padding(10.dp),
 
             ) {
                 Column {
                     Text(
-                        text = histories.merchant,
+                        text = transaction.merchant,
                         modifier = modifier.padding(10.dp),
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = histories.nominal.toString(),
+                        text = formatConverter(transaction.nominal),
                         modifier = modifier.padding(10.dp),
                         style = MaterialTheme.typography.headlineSmall
                     )
