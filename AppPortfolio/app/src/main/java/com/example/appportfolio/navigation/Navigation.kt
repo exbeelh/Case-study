@@ -5,11 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.appportfolio.presentation.HomeScreen
-import com.example.appportfolio.presentation.details.LainnyaScreen
-import com.example.appportfolio.presentation.details.QRISScreen
-import com.example.appportfolio.presentation.details.TarikTunaiScreen
-import com.example.appportfolio.presentation.details.TopUpGoPayScreen
+import com.example.appportfolio.presentation.screen.AppPortfolioScreenViewModel
+import com.example.appportfolio.presentation.screen.DetailScreen
+import com.example.appportfolio.presentation.screen.HomeScreen
 
 @Composable
 fun AppNavGraph(
@@ -20,19 +18,15 @@ fun AppNavGraph(
         startDestination = "home"
     ) {
         composable(route = "home") {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController, viewModel = AppPortfolioScreenViewModel())
         }
-        composable(route = "qrispayment") {
-            QRISScreen(navController = navController)
-        }
-        composable(route = "tariktunai") {
-            TarikTunaiScreen(navController = navController)
-        }
-        composable(route = "topupgopay") {
-            TopUpGoPayScreen(navController = navController)
-        }
-        composable(route = "lainnya") {
-            LainnyaScreen(navController = navController)
+        composable(route = "detail/{label}") { backStackEntry ->
+            backStackEntry.arguments?.getString("label")?.let {
+                DetailScreen(
+                    label = it,
+                    navController = navController,
+                    viewModel = AppPortfolioScreenViewModel())
+            }
         }
     }
 }

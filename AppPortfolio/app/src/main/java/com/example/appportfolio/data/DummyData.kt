@@ -4,7 +4,7 @@ import com.example.appportfolio.data.model.ChartData
 import com.example.appportfolio.data.model.LineChart
 import com.example.appportfolio.data.model.Transaction
 
-val donutChartData = listOf(
+val dummyChartData = listOf(
     ChartData(
         label = "Tarik Tunai",
         percentage = 55f,
@@ -43,6 +43,17 @@ val donutChartData = listOf(
     )
 )
 
-val lineChartData = LineChart(
-    month = listOf(3, 7, 8, 10, 5, 10, 1, 3, 5, 10, 7, 7)
+val lineChartData = listOf<LineChart>(
+    LineChart(1, 3),
+    LineChart(2, 7),
+    LineChart(3, 8),
+    LineChart(4, 10),
+    LineChart(5, 5),
+    LineChart(6, 10),
+    LineChart(7, 1),
+    LineChart(8, 3),
+    LineChart(9, 5),
+    LineChart(10, 10),
+    LineChart(11, 7),
+    LineChart(12, 7),
 )

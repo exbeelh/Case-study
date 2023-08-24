@@ -1,9 +1,7 @@
-package com.example.appportfolio.presentation
+package com.example.appportfolio.presentation.screen
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Typeface
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -50,19 +47,23 @@ import co.yml.charts.ui.piechart.models.PieChartData
 import co.yml.charts.ui.piechart.utils.proportion
 import com.example.appportfolio.R
 import com.example.appportfolio.data.model.ChartData
-import java.util.Locale
+import com.example.appportfolio.data.model.LineChart
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: AppPortfolioScreenViewModel
 ) {
+    val data = viewModel.getAllChartData()
+    val lineChartData = viewModel.getLineData()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) {
-        val context = LocalContext.current
+        LocalContext.current
         LazyColumn(content = {
-            items(2) { item ->
+            items(data.size) { item ->
                 when (item) {
                     0 -> {
                         Text(
@@ -72,12 +73,12 @@ fun HomeScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Box(
-                            modifier = androidx.compose.ui.Modifier
+                            modifier = Modifier
                                 .padding(2.dp)
                                 .fillMaxWidth()
                         ) {
                             Spacer(modifier = Modifier.height(20.dp))
-                            SimpleDonutChart(context, navController)
+                            SimpleDonutChart(data, navController)
                         }
                     }
                     1 -> {
@@ -87,11 +88,7 @@ fun HomeScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        SingleLineChartWithGridLines(DataUtils.getLineChartData(
-                            12,
-                            start = 1,
-                            maxRange = 12
-                        ))
+                        SingleLineChartWithGridLines(getLineChartData(lineChartData))
                     }
                 }
             }
@@ -99,40 +96,45 @@ fun HomeScreen(
     }
 }
 
-fun getDonutChartData(): PieChartData {
-    return PieChartData(
-        slices = listOf(
-            PieChartData.Slice("Tarik Tunai", 55f, Color(0xFF5F0A87)),
-            PieChartData.Slice("QRIS Payment", 31f, Color(0xFF20BF55)),
-            PieChartData.Slice("Topup Gopay", 7.7f, Color(0xFFA40606)),
-            PieChartData.Slice("Lainnya", 15f, Color(0xFFF53844)),
-        ),
-        plotType = PlotType.Donut
-    )
-}
-
-fun getLineChartData(listSize: Int, start: Int = 0, maxRange: Int): List<Point> {
+fun getLineChartData(data: List<LineChart>): List<Point> {
     val list = arrayListOf<Point>()
-    for (index in 0 until listSize) {
+    data.forEach { item ->
         list.add(
-            Point(
-                index.toFloat(),
-                (start until maxRange).random().toFloat()
-            )
+            Point(item.month.toFloat(), item.value.toFloat())
         )
     }
     return list
 }
 
+
+fun getLabelColor(): List<Color> {
+    return listOf(
+        Color(0xFF5F0A87),
+        Color(0xFF20BF55),
+        Color(0xFFA40606),
+        Color(0xFFF53844)
+    )
+}
+
+fun getDonutChartData(chartData: List<ChartData>): PieChartData {
+    val slices = chartData.mapIndexed { index, data ->
+        PieChartData.Slice(data.label, data.percentage, getLabelColor()[index])
+    }
+    return PieChartData(
+        slices = slices,
+        plotType = PlotType.Donut
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SimpleDonutChart(
-    context: Context,
+    donutChartData: List<ChartData>,
     navController: NavController
 ) {
     rememberModalBottomSheetState()
     rememberCoroutineScope()
-    val data = getDonutChartData()
+    val data = getDonutChartData(donutChartData)
     // Sum of all the values
     val sumOfValues = data.totalLength
 
@@ -163,8 +165,7 @@ private fun SimpleDonutChart(
             data,
             pieChartConfig
         ) { slice ->
-            // Toast.makeText(context, slice.label.split(" ").joinToString("").lowercase(), Toast.LENGTH_SHORT).show()
-            navController.navigate(slice.label.split(" ").joinToString("").lowercase())
+            navController.navigate("detail/${slice.label}")
         }
     }
 }
@@ -183,7 +184,6 @@ private fun SingleLineChartWithGridLines(pointsData: List<Point>) {
         .steps(steps)
         .labelAndAxisLinePadding(20.dp)
         .labelData { i ->
-            // Add yMin to get the negative axis values to the scale
             val yMin = pointsData.minOf { it.y }
             val yMax = pointsData.maxOf { it.y }
             val yScale = (yMax - yMin) / steps

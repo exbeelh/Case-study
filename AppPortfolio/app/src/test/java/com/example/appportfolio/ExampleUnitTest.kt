@@ -1,8 +1,12 @@
 package com.example.appportfolio
 
+import com.example.appportfolio.data.model.ChartData
+import com.example.appportfolio.data.model.LineChart
+import com.example.appportfolio.data.repository.ChartDataRepository
 import org.junit.Test
 
 import org.junit.Assert.*
+import org.junit.Before
 
 /**
  * Example local unit test, which will execute on the development machine (host).

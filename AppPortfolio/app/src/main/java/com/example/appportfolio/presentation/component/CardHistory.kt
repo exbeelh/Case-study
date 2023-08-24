@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CardHistory(date: String, nominal: String) {
+fun CardHistory(date: String, nominal: Int) {
     Card (
         modifier = Modifier.fillMaxWidth().padding(10.dp).height(80.dp)
     ) {
